@@ -7,11 +7,19 @@ import EditExpensePage from "./pages/EditExpensePage";
 
 function App() {
   return (<BrowserRouter>
-    <div className="min-h-screen bg-gray-50 text-gray-900">
-      <header className="flex items-center justify-between border-b border-gray-200 bg-white px-6 py-4">
-        <Link to="/" className="text-2xl font-bold text-emerald-600">Kharcha</Link>
-        <Link to="/add" className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700">
-          Add expense</Link>
+    <div className="min-h-screen bg-canvas text-ink">
+      <header className="mx-auto flex max-w-3xl items-center justify-between px-4 py-5">
+        <Link to="/" className="text-xl font-semibold tracking-tight text-ink">Kharcha</Link>
+        <Link
+          to="/add"
+          className="inline-flex items-center gap-3 rounded-full bg-ink py-1 pl-4 pr-1 text-sm font-medium text-white transition-colors hover:bg-ink/80 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink">
+          Add expense
+          <span aria-hidden="true" className="flex size-7 items-center justify-center rounded-full bg-white text-ink">
+            <svg viewBox="0 0 16 16" className="size-3.5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+              <path d="M8 3v10M3 8h10" />
+            </svg>
+          </span>
+        </Link>
       </header>
       <div className="mx-auto max-w-3xl px-4 py-6">
         <Routes>

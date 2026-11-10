@@ -19,7 +19,7 @@ Built as a learning project with **FastAPI + SQLite** on the backend and **React
 
 | Layer | Tools |
 | --- | --- |
-| Backend | Python, FastAPI, SQLAlchemy 2.0, Pydantic, SQLite, httpx |
+| Backend | Python, FastAPI, SQLAlchemy 2.0, Pydantic, SQLite, requests |
 | Frontend | React, TypeScript, Vite, React Router, Tailwind CSS v4 |
 | External API | Frankfurter (exchange rates) |
 

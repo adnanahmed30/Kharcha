@@ -9,7 +9,16 @@ import CategoryChips from "../components/CategoryChips";
 import { useState } from "react";
 
 
+const monthButtonClass =
+    "flex size-10 items-center justify-center rounded-full bg-surface text-ink transition-colors hover:bg-canvas-alt focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-surface";
 
+function Chevron({ direction }: { direction: "left" | "right" }) {
+    return (
+        <svg aria-hidden="true" viewBox="0 0 16 16" className="size-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d={direction === "left" ? "M10 3 5 8l5 5" : "M6 3l5 5-5 5"} />
+        </svg>
+    );
+}
 
 function DashboardPage() {
     const [refreshCounter, setRefreshCounter] = useState(0);
@@ -52,14 +61,18 @@ function DashboardPage() {
     return (
         <main className="space-y-6">
             <div className="flex items-center justify-between">
-                <button type="button" aria-label="Previous month" className="rounded-lg border border-gray-200 bg-white px-3 py-2 text-gray-600 hover:bg-gray-100" 
-                onClick={() => goToMonth(shiftMonth(month, -1))}>&#9664;</button>
-                <h1 className="text-xl font-semibold">{formatMonthLabel(month)}</h1>
-                <button 
-                type="button" 
-                aria-label="Next month" 
-                className="rounded-lg border border-gray-200 bg-white px-3 py-2 text-gray-600 hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-40 disabled:bg-white" 
-                disabled={month === currentMonth()} onClick={() => goToMonth(shiftMonth(month, 1))}>&#9654;</button>
+                <button type="button" aria-label="Previous month" className={monthButtonClass}
+                onClick={() => goToMonth(shiftMonth(month, -1))}>
+                    <Chevron direction="left" />
+                </button>
+                <h1 className="text-2xl font-medium tracking-tight sm:text-3xl">{formatMonthLabel(month)}</h1>
+                <button
+                type="button"
+                aria-label="Next month"
+                className={monthButtonClass}
+                disabled={month === currentMonth()} onClick={() => goToMonth(shiftMonth(month, 1))}>
+                    <Chevron direction="right" />
+                </button>
             </div>
             {isLoading && <p>Loading summary..</p>}
             {error && <p>Could not load summary: {error}</p>}

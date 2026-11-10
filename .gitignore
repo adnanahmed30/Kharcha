@@ -17,3 +17,6 @@ frontend/dist/
 # Editor / OS
 .vscode/
 Thumbs.db
+
+# Playwright MCP snapshots and logs
+.playwright-mcp/

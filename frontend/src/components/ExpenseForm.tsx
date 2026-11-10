@@ -15,11 +15,13 @@ function ExpenseForm({ onSave, initial }: ExpenseFormprops) {
     const [category, setCategory] = useState<Category>(initial?.category ?? "Food");
     const [spentOn, setSpentOn] = useState(initial?.spent_on ?? todayText());
     const [note, setNote] = useState(initial?.note ?? "");
-    const [formError, setFormError] = useState<String | null>(null);
+    const [formError, setFormError] = useState<string | null>(null);
     const [isSaving, setIsSaving] = useState(false);
-    const labelClass = "mb-1 block text-sm font-medium text-gray-700";
+    const labelClass = "mb-2 block text-xs font-medium uppercase tracking-wider text-muted";
+    // No width here on purpose: each field adds w-full (or a fixed width) itself,
+    // because two width classes on one element would fight each other.
     const inputClass =
-        "rounded-lg border border-gray-300 bg-white px-3 py-2 focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/30";
+        "h-12 rounded-xl border border-transparent bg-canvas-alt px-3.5 text-ink transition-colors focus:border-ink focus:bg-surface focus:outline-none";
     async function handleSubmit(e: SubmitEvent<HTMLFormElement>) {
         setFormError(null);
         e.preventDefault();
@@ -39,7 +41,7 @@ function ExpenseForm({ onSave, initial }: ExpenseFormprops) {
         try {
             await onSave(expense);
         } catch (err) {
-            err instanceof Error ? setFormError(err.message) : "Something went wrong!";
+            setFormError(err instanceof Error ? err.message : "Something went wrong!");
         } finally {
             setIsSaving(false);
         }
@@ -50,7 +52,7 @@ function ExpenseForm({ onSave, initial }: ExpenseFormprops) {
     return (
         <form
             onSubmit={handleSubmit}
-            className="space-y-5 rounded-xl border border-gray-200 bg-white p-6 shadow-sm"
+            className="space-y-6 rounded-2xl bg-surface p-6 sm:p-8"
         >
             <div>
                 <label htmlFor="expense-amount" className={labelClass}>Amount</label>
@@ -61,14 +63,14 @@ function ExpenseForm({ onSave, initial }: ExpenseFormprops) {
                         id="expense-amount"
                         value={amountText}
                         onChange={(e) => setAmountText(e.target.value)}
-                        className={`${inputClass} min-w-0 flex-1 tabular-nums`}
+                        className={`${inputClass} min-w-0 flex-1 text-lg font-medium tabular-nums`}
                     />
                     <select
                         aria-label="Currency"
                         id="expense-currency"
                         value={currency}
                         onChange={(e) => setCurrency(e.target.value as Currency)}
-                        className={`${inputClass} w-24`}
+                        className={`${inputClass} w-24 shrink-0`}
                     >
                         {CURRENCIES.map((code) => (
                             <option key={code} value={code}>{code}</option>
@@ -85,7 +87,7 @@ function ExpenseForm({ onSave, initial }: ExpenseFormprops) {
                         id="expense-category"
                         value={category}
                         onChange={(e) => setCategory(e.target.value as Category)}
-                        className={inputClass}
+                        className={`${inputClass} w-full`}
                     >
                         {CATEGORIES.map((name) => (
                             <option key={name} value={name}>{name}</option>
@@ -100,13 +102,13 @@ function ExpenseForm({ onSave, initial }: ExpenseFormprops) {
                         value={spentOn}
                         onChange={(e) => setSpentOn(e.target.value)}
                         max={todayText()}
-                        className={inputClass}
+                        className={`${inputClass} w-full`}
                     />
                 </div>
             </div>
             <div>
-                <label htmlFor="expense-note" className={labelClass}>Note
-                    <span className="font-normal text-gray-400">(optional)</span>
+                <label htmlFor="expense-note" className={labelClass}>Note{" "}
+                    <span className="font-normal normal-case tracking-normal">(optional)</span>
                 </label>
                 <input
                     id="expense-note"
@@ -114,19 +116,24 @@ function ExpenseForm({ onSave, initial }: ExpenseFormprops) {
                     maxLength={200}
                     value={note}
                     onChange={(e) => setNote(e.target.value)}
-                    className={inputClass}
+                    className={`${inputClass} w-full`}
                 />
             </div>
-            {formError && <p role="alert" className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
+            {formError && <p role="alert" className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">
                 {formError}</p>
             }
             <div className="flex justify-end">
                 <button
                     type="submit"
                     disabled={isSaving}
-                    className="rounded-lg bg-emerald-600 px-5 py-2 font-medium text-white hover:bg-emerald-700 disabled:cursor-not-allowed disbaled:opacity-60"
+                    className="inline-flex items-center gap-3 rounded-full bg-ink py-1 pl-5 pr-1 font-medium text-white transition-colors hover:bg-ink/80 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:bg-ink"
                 >
                     {isSaving ? "Saving.." : "Save"}
+                    <span aria-hidden="true" className="flex size-8 items-center justify-center rounded-full bg-white text-ink">
+                        <svg viewBox="0 0 16 16" className="size-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M3 8h10M9 4l4 4-4 4" />
+                        </svg>
+                    </span>
                 </button>
             </div>
         </form>

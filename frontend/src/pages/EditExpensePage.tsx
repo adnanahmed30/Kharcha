@@ -49,6 +49,7 @@ function EditExpensePage() {
 
   return(
     <main>
+        <h1 className="mb-6 text-2xl font-medium tracking-tight sm:text-3xl">Edit expense</h1>
         <ExpenseForm initial={expense} onSave={handleSave}/>
     </main>
   );

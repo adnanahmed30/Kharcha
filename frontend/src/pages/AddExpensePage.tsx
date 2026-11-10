@@ -12,7 +12,7 @@ function AddExpensePage() {
     }
     return (
         <main>
-            <h1> Add expense</h1>
+            <h1 className="mb-6 text-2xl font-medium tracking-tight sm:text-3xl">Add expense</h1>
             <ExpenseForm onSave={handleSave} />
         </main>
     );

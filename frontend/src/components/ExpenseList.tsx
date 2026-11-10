@@ -10,12 +10,12 @@ interface ExpenseListProps {
 
 function ExpenseList({ expenses, onDelete }: ExpenseListProps) {
     if (expenses.length === 0) {
-        return <p className="rounded-xl border border-dashed border-gray-300 bg-white p-8 text-center text-sm text-gray-500">
+        return <p className="rounded-2xl bg-surface p-8 text-center text-sm text-muted">
             No expenses this month</p>;
     }
 
     return (
-        <ul className="divide-y divide-gray-100 rounded-xl border border-gray-200 bg-white shadow-sm">
+        <ul className="divide-y divide-line rounded-2xl bg-surface">
             {expenses.map((expense) => (
                 <ExpenseRow key={expense.id} expense={expense} onDelete={onDelete}/>
             ))}

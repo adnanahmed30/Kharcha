@@ -1,1 +1,35 @@
 @import "tailwindcss";
+
+/*
+  Design tokens. Tailwind v4 turns each --color-* into utilities
+  (bg-canvas, text-ink, border-line, ...) and --font-sans becomes
+  the default font for the whole app.
+*/
+@theme {
+  --font-sans: "DM Sans", ui-sans-serif, system-ui, sans-serif;
+
+  --color-canvas: #f7f7f8;     /* page background */
+  --color-canvas-alt: #f0f0f2; /* slightly darker band / input fill */
+  --color-surface: #ffffff;    /* cards */
+  --color-ink: #0a0a0a;        /* headings, primary buttons */
+  --color-ink-soft: #18181a;   /* cards on dark backgrounds */
+  --color-muted: #6f6f70;      /* body / secondary text */
+  --color-subtle: #aaabab;     /* captions, small labels */
+  --color-line: #e8e8eb;       /* hairline dividers */
+}
+
+@layer base {
+  body {
+    background-color: var(--color-canvas);
+    color: var(--color-ink);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Headlines in the inspiration are set slightly tighter than body text. */
+  h1,
+  h2,
+  h3 {
+    letter-spacing: -0.02em;
+  }
+}

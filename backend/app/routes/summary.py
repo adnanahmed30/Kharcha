@@ -6,7 +6,8 @@ from fastapi import APIRouter, Query, Depends
 from app.schemas import SummaryOut
 from app.database import get_db
 from app.dates import month_range
-from app.models import Expense
+from app.deps import get_current_user
+from app.models import Expense, User
 
 router = APIRouter(prefix = "/api/summary", tags = ["summary"])
 
@@ -15,7 +16,8 @@ router = APIRouter(prefix = "/api/summary", tags = ["summary"])
 @router.get("", response_model = SummaryOut)
 def get_month_summary(
     month : str = Query(pattern = r"^\d{4}-\d{2}$"),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
 ):
     start, end = month_range(month)
     query = (
@@ -24,7 +26,11 @@ def get_month_summary(
             func.sum(Expense.amount_inr_paise).label("total_inr_paise"),
             func.count(Expense.id).label("count"),
         )
-        .where(Expense.spent_on >= start, Expense.spent_on < end)
+        .where(
+            Expense.user_id == current_user.id,
+            Expense.spent_on >= start,
+            Expense.spent_on < end,
+        )
         .group_by(Expense.category)
         .order_by(func.sum(Expense.amount_inr_paise).desc())
     )

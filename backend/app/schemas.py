@@ -1,6 +1,6 @@
 from datetime import date, datetime
 from typing import Literal
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator
 
 Category = Literal[
     "Food", "Transport", "Rent", "Shopping", "Bills", "Health", "Entertainment", "Other"
@@ -56,6 +56,42 @@ class ExpenseUpdate(BaseModel):
             raise ValueError("Date cannot be in the future.")
         return value  
 
+
+
+class LoginIn(BaseModel):
+    email: EmailStr
+    # max_length stops someone making the server hash a huge string.
+    password: str = Field(min_length = 1, max_length = 128)
+    @field_validator("email")
+    @classmethod
+    def lowercase_email(cls, value: str) -> str:
+        return value.strip().lower()
+
+
+NAME_MAX_LENGTH = 50
+
+
+class RegisterIn(LoginIn):
+    name: str
+    password: str = Field(min_length = 8, max_length = 128)
+    @field_validator("name")
+    @classmethod
+    def clean_name(cls, value: str) -> str:
+        # Trim first, so "   " counts as empty and stray spaces don't count towards the limit.
+        value = value.strip()
+        if not value:
+            raise ValueError("Name cannot be empty.")
+        if len(value) > NAME_MAX_LENGTH:
+            raise ValueError(f"Name must be at most {NAME_MAX_LENGTH} characters.")
+        return value
+
+
+class UserOut(BaseModel):
+    model_config = ConfigDict(from_attributes = True)
+    id: int
+    name: str
+    email: str
+    created_at: datetime
 
 
 class CategoryTotal(BaseModel):

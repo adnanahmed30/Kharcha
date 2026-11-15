@@ -35,3 +35,27 @@ export interface SummaryOut{
     count: number;
     by_category: CategoryTotal[];
 }
+
+
+// Body of /auth/register and /auth/login (backend RegisterIn / LoginIn).
+export interface Credentials{
+    email: string;
+    password: string;
+}
+
+
+// Body of /auth/register (backend RegisterIn). Name is 1-50 characters after trimming.
+export interface RegisterIn extends Credentials{
+    name: string;
+}
+
+export const NAME_MAX_LENGTH = 50;
+
+
+// Backend UserOut. The session token is in an httpOnly cookie, never in JavaScript.
+export interface UserOut{
+    id: number;
+    name: string;
+    email: string;
+    created_at: string;
+}

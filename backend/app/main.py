@@ -4,6 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app import models
 from app.database import Base, engine
 from app.routes import expenses, summary
+from app.error_handler import register_error_handlers
  
 
 Base.metadata.create_all(bind = engine)
@@ -11,7 +12,7 @@ Base.metadata.create_all(bind = engine)
 
 
 app = FastAPI(title = "Kharcha API")
-
+register_error_handlers(app)
 
 app.add_middleware(
     CORSMiddleware,

@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models import Expense
 from app.schemas import Category, ExpenseCreate, ExpenseOut, ExpenseUpdate
-from app.services.exchange_rates import (RateNotFoundError, RateServiceError, get_rate_to_inr, to_inr_paise,)
+from app.services.exchange_rates import (get_rate_to_inr, to_inr_paise,)
 from app.dates import month_range
 
 router = APIRouter(prefix = "/api/expenses", tags = ["expenses"])
@@ -13,13 +13,7 @@ router = APIRouter(prefix = "/api/expenses", tags = ["expenses"])
 
 @router.post("", response_model = ExpenseOut, status_code = 201)
 def create_expense(payload: ExpenseCreate, db: Session = Depends(get_db)):
-    try:
-        rate = get_rate_to_inr(payload.currency, payload.spent_on)
-    except RateNotFoundError:
-        raise HTTPException(status_code = 422, detail = "No exchange rate is available for that date.")
-    except RateServiceError:
-        raise HTTPException(status_code = 502, detail = "Couldn't get the exchange rate. Try again.")
-    
+    rate = get_rate_to_inr(payload.currency, payload.spent_on)
 
     expense = Expense(
         amount_minor = payload.amount_minor,
@@ -64,12 +58,7 @@ def update_expense(expense_id:int, payload: ExpenseUpdate, db: Session = Depends
         setattr(expense, name, value)
 
     if any(field in changes for field in ("amount_minor", "currency", "spent_on")):
-        try:
-            expense.rate = get_rate_to_inr(expense.currency, expense.spent_on)
-        except RateNotFoundError:
-            raise HTTPException(status_code = 422, detail = "No exchange rate is available for that date.")
-        except RateServiceError:
-            raise HTTPException(status_code = 502, detail = "Couldn't get the exchange rate. Try again.")
+        expense.rate = get_rate_to_inr(expense.currency, expense.spent_on)
         expense.amount_inr_paise = to_inr_paise(expense.amount_minor, expense.rate)
 
     db.commit()

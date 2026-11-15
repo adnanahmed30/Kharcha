@@ -1,4 +1,5 @@
 from datetime import date
+import math
 
 import requests
 
@@ -33,7 +34,15 @@ def get_rate_to_inr(currency: str, on:date) -> float:
         raise RateServiceError(f"Exchange-rate service returned {response.status_code}")
 
 
-    return float(response.json()["rate"])
+    try:
+        rate = float(response.json()["rate"])
+    except(ValueError, KeyError, TypeError) as error:
+        raise RateServiceError("Exchange-rate service returned an invalid response.") from error
+
+    if not math.isfinite(rate) or rate <= 0:
+        raise RateServiceError(f"Exchange-rate service returned an invalid rate: {rate}")
+
+    return rate
 
 
 def to_inr_paise(amount_minor: int, rate: float) -> int:

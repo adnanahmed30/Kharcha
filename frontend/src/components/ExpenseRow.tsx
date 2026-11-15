@@ -37,11 +37,13 @@ function ExpenseRow({ expense, onDelete }: ExpenseRowProps) {
                 <div className="-mr-2 flex gap-1">
                     <Link
                         to={`/edit/${expense.id}`}
+                        aria-label={`Edit ${expense.category} expense from ${formatDay(expense.spent_on)}`}
                         className={`${actionClass} hover:bg-canvas-alt hover:text-ink`}>
                         Edit
                     </Link>
                     <button
                         type="button"
+                        aria-label={`Delete ${expense.category} expense from ${formatDay(expense.spent_on)}`}
                         onClick={() => onDelete(expense.id)}
                         className={`${actionClass} hover:bg-red-50 hover:text-red-600`}
                     >

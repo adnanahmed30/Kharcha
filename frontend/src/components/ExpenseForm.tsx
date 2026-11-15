@@ -2,7 +2,7 @@ import { useState } from "react";
 import { CATEGORIES, CURRENCIES, type Category, type Currency, type ExpenseIn } from "../types";
 import { todayText } from "../utils/dates";
 import type { SubmitEvent } from "react";
-import { toInputText, toMinorUnits } from "../utils/money";
+import { MAX_AMOUNT_MINOR, toInputText, toMinorUnits } from "../utils/money";
 
 interface ExpenseFormprops {
     onSave: (input: ExpenseIn) => Promise<void>;
@@ -28,6 +28,11 @@ function ExpenseForm({ onSave, initial }: ExpenseFormprops) {
         const amount_minor = toMinorUnits(amountText);
         if (amount_minor === null) {
             setFormError("Enter an amount greater than 0");
+            return;
+        }
+        if (amount_minor > MAX_AMOUNT_MINOR) {
+            const maxAmount = (MAX_AMOUNT_MINOR / 100).toLocaleString("en-IN");
+            setFormError(`Enter an amount no more than ${maxAmount}`);
             return;
         }
         const expense: ExpenseIn = {

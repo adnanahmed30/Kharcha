@@ -1,5 +1,5 @@
 import { useSearchParams } from "react-router";
-import { currentMonth, formatMonthLabel, shiftMonth } from "../utils/dates";
+import { currentMonth, formatMonthLabel, isValidMonth, MIN_MONTH, shiftMonth } from "../utils/dates";
 import SummaryBox from "../components/SummaryBox";
 import { deleteExpense, getSummary, listExpenses } from "../api/expenses";
 import ExpenseList from "../components/ExpenseList";
@@ -23,7 +23,8 @@ function Chevron({ direction }: { direction: "left" | "right" }) {
 function DashboardPage() {
     const [refreshCounter, setRefreshCounter] = useState(0);
     const [searchParams, setSearchParams] = useSearchParams();
-    const month = searchParams.get("month") ?? currentMonth();
+    const rawMonth = searchParams.get("month");
+    const month = isValidMonth(rawMonth) ? rawMonth : currentMonth();
     const rawCategory = searchParams.get("category");
     const category = isCategory(rawCategory) ? rawCategory : null;
     const { data: summary, isLoading, error } = useFetch(() => getSummary(month), [month, refreshCounter]);
@@ -62,7 +63,7 @@ function DashboardPage() {
         <main className="space-y-6">
             <div className="flex items-center justify-between">
                 <button type="button" aria-label="Previous month" className={monthButtonClass}
-                onClick={() => goToMonth(shiftMonth(month, -1))}>
+                disabled={month === MIN_MONTH} onClick={() => goToMonth(shiftMonth(month, -1))}>
                     <Chevron direction="left" />
                 </button>
                 <h1 className="text-2xl font-medium tracking-tight sm:text-3xl">{formatMonthLabel(month)}</h1>

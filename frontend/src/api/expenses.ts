@@ -8,16 +8,28 @@ async function getErrorMessage(response: Response): Promise<string> {
         const data = await response.json();
         const detail = data.detail;
         if (typeof detail === "string") return detail;
-        if (Array.isArray(detail)) return detail[0].msg;
-    } catch (error) { }
+        // Pydantic prefixes messages from custom validators with "Value error, ".
+        if (Array.isArray(detail)) return detail[0].msg.replace(/^Value error, /, "");
+    } catch { }
 
     return "Something went wrong!";
 }
 
 
+// fetch() only throws when the request never reaches the server
+// (backend not running, no network); turn that into a readable message.
+async function send(url: string, init?: RequestInit): Promise<Response> {
+    try {
+        return await fetch(url, init);
+    } catch {
+        throw new Error("Can't reach the server. Is the backend running?");
+    }
+}
+
+
 
 export async function createExpense(input: ExpenseIn): Promise<ExpenseOut> {
-    const response = await fetch(`${API_BASE_URL}/expenses`, {
+    const response = await send(`${API_BASE_URL}/expenses`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(input),
@@ -38,7 +50,7 @@ export async function listExpenses(filters: { month: string | null; category: st
     if (category) params.set("category", category);
     const query = params.toString();
     const url = query ? `${API_BASE_URL}/expenses?${params}` : `${API_BASE_URL}/expenses`;
-    const response = await fetch(url);
+    const response = await send(url);
     if (!response.ok) {
         throw new Error(await getErrorMessage(response));
     }
@@ -51,7 +63,7 @@ export async function getSummary(month: string): Promise<SummaryOut> {
     const params = new URLSearchParams();
     params.set("month", month);
     const url = `${API_BASE_URL}/summary?${params}`;
-    const response = await fetch(url);
+    const response = await send(url);
     if (!response.ok) {
         throw new Error(await getErrorMessage(response));
     }
@@ -61,7 +73,7 @@ export async function getSummary(month: string): Promise<SummaryOut> {
 
 
 export async function updateExpense(id: number, changes: Partial<ExpenseIn>): Promise<ExpenseOut> {
-    const response = await fetch(`${API_BASE_URL}/expenses/${id}`, {
+    const response = await send(`${API_BASE_URL}/expenses/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(changes),
@@ -76,7 +88,7 @@ export async function updateExpense(id: number, changes: Partial<ExpenseIn>): Pr
 
 
 export async function deleteExpense(id: number): Promise<void> {
-    const response = await fetch(`${API_BASE_URL}/expenses/${id}`, {
+    const response = await send(`${API_BASE_URL}/expenses/${id}`, {
         method: "DELETE",
     });
 
@@ -87,7 +99,7 @@ export async function deleteExpense(id: number): Promise<void> {
 
 
 export async function getExpense(id: number): Promise<ExpenseOut> {
-    const response = await fetch(`${API_BASE_URL}/expenses/${id}`, {
+    const response = await send(`${API_BASE_URL}/expenses/${id}`, {
         method: "GET",
     });
 

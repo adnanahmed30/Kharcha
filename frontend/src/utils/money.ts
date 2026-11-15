@@ -20,10 +20,15 @@ export function formatAmount(amountMinor: number, currency: Currency): string{
 }
 
 
+// Must match the le=1_000_000_000 limit on amount_minor in backend/app/schemas.py.
+export const MAX_AMOUNT_MINOR = 1_000_000_000;
+
+
 export function toMinorUnits(inputamount: string): number | null{
     const amount = Number(inputamount);
     const amountMinor = Math.round(amount * 100);
-    if(Number.isNaN(amount)  ||  amountMinor<= 0) return null;
+    // isFinite rejects NaN as well as "Infinity", which isNaN let through.
+    if(!Number.isFinite(amount)  ||  amountMinor<= 0) return null;
     return amountMinor;
 }
 

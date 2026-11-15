@@ -38,6 +38,17 @@ export function currentMonth(): string {
 }
 
 
+// The backend has no exchange rates before 2000, so the dashboard starts here.
+export const MIN_MONTH = "2000-01";
+
+// True for "YYYY-MM" strings between MIN_MONTH and the current month.
+// "YYYY-MM" strings sort in date order, so plain string comparison works.
+export function isValidMonth(value: string | null): value is string {
+    if (value === null || !/^\d{4}-(0[1-9]|1[0-2])$/.test(value)) return false;
+    return value >= MIN_MONTH && value <= currentMonth();
+}
+
+
 export function shiftMonth(month: string, delta: number): string {
     const [year, monthNumber] = month.split("-").map(Number);
     const monthIndex = monthNumber - 1 + delta;

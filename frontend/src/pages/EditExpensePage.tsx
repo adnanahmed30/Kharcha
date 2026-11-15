@@ -7,7 +7,12 @@ import type { ExpenseIn } from "../types";
 function EditExpensePage() {
     const {id} = useParams();
     const expenseId = Number(id);
-    const {data: expense, isLoading, error} = useFetch(() => (getExpense(expenseId)), [expenseId]);
+    // "/edit/abc" gives NaN; skip the request and show the same message as a missing expense.
+    const isValidId = Number.isInteger(expenseId) && expenseId > 0;
+    const {data: expense, isLoading, error} = useFetch(
+        () => isValidId ? getExpense(expenseId) : Promise.reject(new Error("Expense not found.")),
+        [expenseId],
+    );
     const navigate = useNavigate();
     if(isLoading){
         return <p>Loading expense...</p>;
@@ -36,12 +41,12 @@ function EditExpensePage() {
         if(updated.spent_on !== expense.spent_on){
             changes.spent_on = updated.spent_on;
         }
-        if(Object.keys(changes).length === 0) navigate("/");
-        else{
+        if(Object.keys(changes).length > 0){
             await updateExpense(expense.id, changes);
-            const month = updated.spent_on.slice(0, 7);
-            navigate(`/?month=${month}`);
         }
+        // Go back to the expense's month whether or not anything changed.
+        const month = updated.spent_on.slice(0, 7);
+        navigate(`/?month=${month}`);
 
     }
 
